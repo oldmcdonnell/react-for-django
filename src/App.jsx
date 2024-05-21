@@ -17,7 +17,9 @@ const InstructorsList = ({ instructors }) => {
       <h2>Instructors</h2>
       {instructors.map(inst => {
         return (
+          <>
           <div key={inst.id}> {inst.id} - {inst.name} </div>
+          </>
         )
       })}
     </div>
@@ -26,6 +28,38 @@ const InstructorsList = ({ instructors }) => {
   )
 }
 
+const DeleteInstrctor = () => {
+
+}
+const EditInstructor = ( { getInstructors }) => {
+  const [idNum, setIdNum] = useState(0)  
+  const [name, setName] = useState('')
+
+    const EditThisInstructor = () => {
+
+      if (!name) {
+        return
+      }
+      axios.put(`http://127.0.0.1:8000/instructors/${idNum}/`, {name: name})
+        .then(response => {
+          console.log('Response: ', response)
+          setIdNum(0)
+          setName('')
+          getInstructors()
+        })
+        .catch(error => console.log('Error: ', error))
+    }
+    return (
+      <div>
+        <h2>Update Instructor</h2>
+        <input onChange={e => setIdNum(e.target.value)} type="number" value={idNum} />
+        <input onChange={e => setName(e.target.value)} placeholder='Enter new name' value={name} />
+        <button onClick={()=> EditThisInstructor}>
+          Update
+        </button>
+      </div>
+    )
+}
 
 const NewInstructor = ({getInstructors}) => {
   const [name, setName] = useState('')
@@ -83,6 +117,7 @@ function App() {
     <div className="p-5">
       <InstructorsList instructors={instructors}/>
       <NewInstructor getInstructors={getInstructors} />
+      <EditInstructor getInstructors={getInstructors} />
     </div>
   )
 }
