@@ -10,6 +10,57 @@ const Title = () => {
   )
 }
 
+
+const InstructorsList = ({ instructors }) => {
+  return instructors.length > 0 ? (
+    <div>
+      <h2>Instructors</h2>
+      {instructors.map(inst => {
+        return (
+          <div key={inst.id}> {inst.id} - {inst.name} </div>
+        )
+      })}
+    </div>
+  ) : (
+    <div> Loading… </div>
+  )
+}
+
+
+const NewInstructor = ({getInstructors}) => {
+  const [name, setName] = useState('')
+
+  const createInstructor = () => {
+    axios.post('http://127.0.0.1:8000/instructors/', {
+      name: name
+    })
+    .then(response => {
+      console.log('Response', response)
+      if (response.status === 200) {
+        setName('')
+        getInstructors()
+      }
+    })
+    .catch(error => console.log('ERROR', error))
+  }
+  return (
+    <div>
+      <h2>Create A New Instructor</h2>
+      <input 
+      onChange={e=> setName(e.target.value)}
+      placeholder="enter name"
+      value={name}
+
+      />
+      <button onClick={() => createInstructor()}>
+        Create Instuctor
+      </button>
+    </div>
+  )
+}
+
+
+
 function App() {
   const [instructors, setInstructors] = useState([])
 
@@ -21,12 +72,17 @@ function App() {
   const getInstructors = () => {
     console.log('test')
     axios.get('http://127.0.0.1:8000/instructors/')
+    .then(response => {
+      setInstructors(response.data)
+      console.log('response', response)
+    })
+    .catch(error => console.log('Error: ', error))
   }
 
   return (
     <div className="p-5">
-      <Title />
-      
+      <InstructorsList instructors={instructors}/>
+      <NewInstructor getInstructors={getInstructors} />
     </div>
   )
 }
